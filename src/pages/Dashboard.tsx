@@ -46,6 +46,18 @@ const Dashboard = () => {
     },
   });
 
+  const handleVote = (ideaId: string) => {
+    if (!ideaId) {
+      toast({
+        title: "Error",
+        description: "Invalid idea ID",
+        variant: "destructive",
+      });
+      return;
+    }
+    voteMutation.mutate(ideaId);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-green-50 to-white p-8">
@@ -89,7 +101,7 @@ const Dashboard = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => voteMutation.mutate(idea.id)}
+                          onClick={() => idea.id && handleVote(idea.id)}
                           className="flex items-center space-x-2"
                         >
                           <ThumbsUp className="h-4 w-4" />
@@ -111,10 +123,12 @@ const Dashboard = () => {
                             <DialogHeader>
                               <DialogTitle>{idea.title}</DialogTitle>
                             </DialogHeader>
-                            <IdeaComments
-                              ideaId={idea.id}
-                              comments={idea.comments || []}
-                            />
+                            {idea.id && (
+                              <IdeaComments
+                                ideaId={idea.id}
+                                comments={idea.comments || []}
+                              />
+                            )}
                           </DialogContent>
                         </Dialog>
                       </div>

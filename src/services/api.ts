@@ -50,11 +50,13 @@ export const ideaService = {
   },
 
   voteIdea: async (ideaId: string) => {
+    if (!ideaId) throw new Error("Idea ID is required");
     const response = await api.post(`/ideas/${ideaId}/vote`);
     return response.data;
   },
 
   commentIdea: async (ideaId: string, text: string) => {
+    if (!ideaId) throw new Error("Idea ID is required");
     const response = await api.post(`/ideas/${ideaId}/comment`, { text });
     return response.data;
   }
