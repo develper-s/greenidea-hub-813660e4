@@ -1,23 +1,40 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { authService } from "@/services/api";
 
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Registration initiated",
-      description: "Feature coming soon!",
-    });
+    setIsLoading(true);
+    
+    try {
+      await authService.register(name, email, password);
+      toast({
+        title: "Success",
+        description: "Registration successful. Please log in.",
+      });
+      navigate("/login");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Registration failed. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -40,6 +57,7 @@ const Register = () => {
                   onChange={(e) => setName(e.target.value)}
                   className="w-full"
                   required
+                  disabled={isLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -50,6 +68,7 @@ const Register = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full"
                   required
+                  disabled={isLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -60,10 +79,15 @@ const Register = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full"
                   required
+                  disabled={isLoading}
                 />
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary-hover">
-                Register
+              <Button 
+                type="submit" 
+                className="w-full bg-primary hover:bg-primary-hover"
+                disabled={isLoading}
+              >
+                {isLoading ? "Creating account..." : "Register"}
               </Button>
             </form>
             <div className="mt-4 text-center text-sm">
